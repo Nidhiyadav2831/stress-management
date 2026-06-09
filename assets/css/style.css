@@ -1,0 +1,67 @@
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #4F46E5 0%, #10B981 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.section {
+    display: none;
+    width: 100%;
+    min-height: 100vh;
+    padding: 2rem;
+    animation: fadeIn 0.5s ease;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 1rem;
+    margin: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.nav-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    margin: 0 0.5rem;
+    font-weight: 500;
+}
+
+.nav-button:hover {
+    background: linear-gradient(45deg, #4F46E5, #10B981);
+    color: white !important;
+    transform: scale(1.05);
+}
+
+.nav-button.active {
+    background: linear-gradient(45deg, #4F46E5, #10B981);
+    color: white !important;
+}
+
+.gradient-text {
+    background: linear-gradient(45deg, #4F46E5, #10B981);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradient 3s ease infinite;
+    background-size: 200% 200%;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Add all other CSS styles from the original file here */ 

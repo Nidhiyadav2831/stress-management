@@ -1,0 +1,1835 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SereneMind - Your Mental Wellness Companion</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- AOS -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    backgroundImage: {
+                        'music-bg': "url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4')",
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        serene: {
+                            100: '#E6F4F1',
+                            200: '#B2DFDB',
+                            600: '#00796B'
+                        },
+                        peaceful: {
+                            100: '#EDF7FA',
+                            200: '#B3E5FC',
+                            600: '#0288D1'
+                        },
+                        tranquil: {
+                            100: '#F3F4F6',
+                            200: '#E0F7FA',
+                            600: '#006064'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #4F46E5 0%, #10B981 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .section {
+            display: none;
+            padding: 2rem;
+            animation: fadeIn 0.5s ease;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 1rem;
+            margin: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            margin: 0 0.5rem;
+        }
+        .nav-button:hover {
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+            color: white;
+            transform: scale(1.05);
+        }
+        .nav-button.active {
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+            color: white;
+        }
+        .gradient-text {
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        #drawingCanvas {
+            border: 2px solid #4F46E5;
+            border-radius: 8px;
+            background: white;
+        }
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        .photo-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        .photo-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .photo-card:hover img {
+            transform: scale(1.05);
+        }
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            transition: all 4s ease-in-out;
+            margin: 0 auto;
+        }
+        .breathing-circle.expand {
+            transform: scale(1.5);
+        }
+        .tool-button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .tool-button.active {
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+            color: white;
+        }
+        .comment-section {
+            display: none;
+            margin-top: 1rem;
+        }
+        .comment-section.active {
+            display: block;
+        }
+        .video-card {
+            transition: transform 0.3s ease;
+        }
+        .video-card:hover {
+            transform: scale(1.02);
+        }
+        .video-card iframe {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .audio-card {
+            transition: transform 0.3s ease;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem;
+        }
+        .audio-card:hover {
+            transform: scale(1.02);
+        }
+        audio {
+            width: 100%;
+            height: 40px;
+            border-radius: 20px;
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+            padding: 5px;
+        }
+        audio::-webkit-media-controls-panel {
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+        }
+        audio::-webkit-media-controls-current-time-display,
+        audio::-webkit-media-controls-time-remaining-display {
+            color: white;
+        }
+        audio::-webkit-media-controls-play-button,
+        audio::-webkit-media-controls-timeline,
+        audio::-webkit-media-controls-volume-slider {
+            filter: brightness(0) invert(1);
+        }
+        .post-card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .post-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+        .like-button {
+            transition: all 0.3s ease;
+        }
+        .like-button.liked {
+            color: #EF4444;
+        }
+        .comment-section {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .comment-section.active {
+            max-height: 500px;
+        }
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: linear-gradient(45deg, #4F46E5, #10B981);
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            animation: slideIn 0.3s ease, fadeOut 0.3s ease 2.7s;
+            display: none;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+        /* Smooth Scroll Behavior */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Enhanced Card Hover Effects */
+        .bg-white:hover, .bg-gray-800:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        /* Birthday Celebration Styles */
+        .balloon-container {
+            position: relative;
+            height: 200px;
+        }
+       
+        .balloon {
+            position: absolute;
+            font-size: 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+       
+        .balloon1 {
+            left: 20%;
+            animation-delay: 0s;
+        }
+       
+        .balloon2 {
+            left: 50%;
+            animation-delay: 0.5s;
+        }
+       
+        .balloon3 {
+            left: 80%;
+            animation-delay: 1s;
+        }
+       
+        .cake-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+       
+        .cake {
+            font-size: 4rem;
+            animation: bounce 1s ease infinite;
+        }
+       
+        .candles {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+       
+        .candle {
+            display: inline-block;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(to bottom, #ffd700, #ffa500);
+            margin: 0 2px;
+            animation: flicker 0.5s ease infinite;
+        }
+       
+        .confetti-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+        }
+       
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+            animation: confetti 3s ease-in-out infinite;
+        }
+       
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+       
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+       
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+       
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-lg z-50">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="text-2xl font-bold gradient-text">SereneMind</div>
+            <div class="flex space-x-4">
+                <button class="nav-button" onclick="showSection('login')">Login</button>
+                <button class="nav-button" onclick="showSection('about')">About</button>
+                <button class="nav-button" onclick="showSection('breathing')">Breathing</button>
+                <button class="nav-button" onclick="showSection('meditation')">Meditation</button>
+                <button class="nav-button" onclick="showSection('music')">Music</button>
+                <button class="nav-button" onclick="showSection('drawing')">Drawing</button>
+                <button class="nav-button" onclick="showSection('photos')">Photos</button>
+                <button class="nav-button" onclick="showSection('contact')">Contact</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 pt-20">
+        <!-- Login/Signup Section -->
+        <section id="login" class="section active">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 mt-10">
+                <div class="flex justify-center space-x-4 mb-6">
+                    <button id="loginTab" class="text-xl font-bold gradient-text active" onclick="switchAuthTab('login')">Login</button>
+                    <button id="signupTab" class="text-xl font-bold text-gray-500" onclick="switchAuthTab('signup')">Sign Up</button>
+                </div>
+               
+                <!-- Mood Selection Section -->
+                <div id="moodSection" class="mb-8">
+                    <h2 class="text-2xl font-bold text-center gradient-text mb-6">How are you feeling today?</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="selectMood('happy')" class="mood-button p-4 rounded-xl bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800 hover:scale-105 transition-transform">
+                            <div class="text-4xl mb-2">😊</div>
+                            <span class="font-semibold">Happy</span>
+                        </button>
+                        <button onclick="selectMood('stressed')" class="mood-button p-4 rounded-xl bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 hover:scale-105 transition-transform">
+                            <div class="text-4xl mb-2">😫</div>
+                            <span class="font-semibold">Stressed</span>
+                        </button>
+                        <button onclick="selectMood('fine')" class="mood-button p-4 rounded-xl bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 hover:scale-105 transition-transform">
+                            <div class="text-4xl mb-2">😌</div>
+                            <span class="font-semibold">Fine</span>
+                        </button>
+                        <button onclick="selectMood('share')" class="mood-button p-4 rounded-xl bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 hover:scale-105 transition-transform">
+                            <div class="text-4xl mb-2">💭</div>
+                            <span class="font-semibold">Share</span>
+                        </button>
+                    </div>
+                    <div id="moodMessage" class="mt-6 text-center text-lg font-medium hidden">
+                        <!-- Mood messages will be displayed here -->
+                    </div>
+                </div>
+               
+                <!-- Login Form -->
+                <div id="loginForm" class="auth-form">
+                    <h2 class="text-3xl font-bold text-center gradient-text mb-8">Welcome Back</h2>
+                    <form onsubmit="login(event)" autocomplete="off">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                            <input type="email" id="loginEmail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required autocomplete="off">
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                            <input type="password" id="loginPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required autocomplete="new-password">
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-emerald-500 text-white py-2 rounded-lg hover:opacity-90 transition-opacity">
+                            Login
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Signup Form -->
+                <div id="signupForm" class="auth-form hidden">
+                    <h2 class="text-3xl font-bold text-center gradient-text mb-8">Create Account</h2>
+                    <form onsubmit="signup(event)" autocomplete="off">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Name</label>
+                            <input type="text" id="signupName" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required autocomplete="off">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                            <input type="email" id="signupEmail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required autocomplete="off">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Password</label>
+                            <input type="password" id="signupPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required
+                                   pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$"
+                                   title="Password must contain at least one letter, one number, and one special character"
+                                   autocomplete="new-password">
+                            <p class="text-sm text-gray-500 mt-1">Password must contain letters, numbers, and special characters</p>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Confirm Password</label>
+                            <input type="password" id="confirmPassword" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required autocomplete="new-password">
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-emerald-500 text-white py-2 rounded-lg hover:opacity-90 transition-opacity">
+                            Sign Up
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Birthday Celebration Section -->
+        <section id="birthday" class="section">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8 mt-10">
+                <h2 class="text-3xl font-bold text-center gradient-text mb-8">🎉 Birthday Celebration 🎉</h2>
+               
+                <!-- Birthday Input Form -->
+                <div id="birthdayForm" class="mb-8">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 dark:text-gray-300 mb-2">When is your birthday?</label>
+                        <input type="date" id="birthdayInput" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+                    </div>
+                    <button onclick="checkBirthday()" class="w-full bg-gradient-to-r from-indigo-600 to-emerald-500 text-white py-2 rounded-lg hover:opacity-90 transition-opacity">
+                        Check Birthday
+                    </button>
+                </div>
+
+                <!-- Birthday Celebration Display -->
+                <div id="birthdayCelebration" class="hidden">
+                    <div class="text-center">
+                        <div class="balloon-container mb-8">
+                            <div class="balloon balloon1">🎈</div>
+                            <div class="balloon balloon2">🎈</div>
+                            <div class="balloon balloon3">🎈</div>
+                        </div>
+                       
+                        <div class="cake-container mb-8">
+                            <div class="cake">🎂</div>
+                            <div class="candles">
+                                <div class="candle"></div>
+                                <div class="candle"></div>
+                                <div class="candle"></div>
+                            </div>
+                        </div>
+
+                        <div class="confetti-container">
+                            <div class="confetti"></div>
+                            <div class="confetti"></div>
+                            <div class="confetti"></div>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-pink-500 mb-4">Happy Birthday!</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-6">Wishing you a wonderful day filled with joy and happiness! 🎉</p>
+                       
+                        <button onclick="showSection('about')" class="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:opacity-90 transition-opacity">
+                            Continue to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <style>
+            /* Birthday Celebration Styles */
+            .balloon-container {
+                position: relative;
+                height: 200px;
+            }
+           
+            .balloon {
+                position: absolute;
+                font-size: 2rem;
+                animation: float 3s ease-in-out infinite;
+            }
+           
+            .balloon1 {
+                left: 20%;
+                animation-delay: 0s;
+            }
+           
+            .balloon2 {
+                left: 50%;
+                animation-delay: 0.5s;
+            }
+           
+            .balloon3 {
+                left: 80%;
+                animation-delay: 1s;
+            }
+           
+            .cake-container {
+                position: relative;
+                margin: 2rem 0;
+            }
+           
+            .cake {
+                font-size: 4rem;
+                animation: bounce 1s ease infinite;
+            }
+           
+            .candles {
+                position: absolute;
+                top: -20px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+           
+            .candle {
+                display: inline-block;
+                width: 4px;
+                height: 20px;
+                background: linear-gradient(to bottom, #ffd700, #ffa500);
+                margin: 0 2px;
+                animation: flicker 0.5s ease infinite;
+            }
+           
+            .confetti-container {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                top: 0;
+                left: 0;
+                pointer-events: none;
+            }
+           
+            .confetti {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                background: linear-gradient(45deg, #ff0000, #00ff00, #0000ff);
+                animation: confetti 3s ease-in-out infinite;
+            }
+           
+            @keyframes float {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-20px); }
+            }
+           
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-10px); }
+            }
+           
+            @keyframes flicker {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+           
+            @keyframes confetti {
+                0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+            }
+        </style>
+
+        <script>
+            // Add this to your existing script section
+            function checkBirthday() {
+                const birthdayInput = document.getElementById('birthdayInput');
+                const birthdayForm = document.getElementById('birthdayForm');
+                const birthdayCelebration = document.getElementById('birthdayCelebration');
+               
+                if (!birthdayInput.value) {
+                    alert('Please enter your birthday');
+                    return;
+                }
+               
+                const today = new Date();
+                const birthday = new Date(birthdayInput.value);
+               
+                // Check if it's the user's birthday
+                if (today.getMonth() === birthday.getMonth() && today.getDate() === birthday.getDate()) {
+                    birthdayForm.classList.add('hidden');
+                    birthdayCelebration.classList.remove('hidden');
+                   
+                    // Create confetti effect
+                    createConfetti();
+                } else {
+                    // If not birthday, proceed to about section
+                    showSection('about');
+                }
+            }
+           
+            function createConfetti() {
+                const container = document.querySelector('.confetti-container');
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    container.appendChild(confetti);
+                }
+            }
+        </script>
+
+        <!-- About Section -->
+        <!-- About Section -->
+        <section id="about" class="section">
+          <div class="max-w-6xl mx-auto">
+              <!-- Hero Section with Image -->
+              <div class="text-center mb-16">
+                  <h1 class="text-5xl font-extrabold mb-6 relative group">
+                      <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500 transform transition-all duration-500 hover:scale-110 hover:rotate-1 hover:skew-y-1">
+                          Welcome to SereneMind
+                      </span>
+                      <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-indigo-600 to-emerald-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></span>
+                      <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-48 h-1 bg-gradient-to-r from-emerald-500 to-indigo-600 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 delay-100"></span>
+                  </h1>
+                  <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto transform transition-all duration-300 hover:scale-105">
+                      Your personal sanctuary for mental wellness and emotional balance. Discover peace through our carefully curated tools and resources.
+                  </p>
+              </div>
+
+              <div class="flex flex-col md:flex-row items-center gap-8 mb-16">
+                  <div class="flex-1 grid grid-cols-2 gap-4">
+                      <img src="https://images.unsplash.com/photo-1552693673-1bf958298935?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
+                           alt="Lotus Meditation" class="rounded-2xl shadow-2xl w-full h-[250px] object-cover transform hover:scale-105 transition-transform duration-300">
+                      <img src="https://images.unsplash.com/photo-1528319725582-ddc096101511?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
+                           alt="Group Meditation" class="rounded-2xl shadow-2xl w-full h-[250px] object-cover transform hover:scale-105 transition-transform duration-300">
+                      <img src="https://images.unsplash.com/photo-1499209974431-9dddcece7f88?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
+                           alt="Beach Meditation" class="rounded-2xl shadow-2xl w-full h-[250px] object-cover transform hover:scale-105 transition-transform duration-300">
+                      <img src="https://images.unsplash.com/photo-1516534775068-ba3e7458af70?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
+                           alt="Sunrise Yoga" class="rounded-2xl shadow-2xl w-full h-[250px] object-cover transform hover:scale-105 transition-transform duration-300">
+                  </div>
+                  <div class="flex-1 text-center md:text-left space-y-6">
+                      <div class="relative group">
+                          <h2 class="text-5xl font-extrabold mb-2 bg-gradient-to-r from-indigo-600 to-emerald-500 bg-clip-text text-transparent animate-gradient transform transition-all duration-500 hover:scale-105">
+                              Your Journey to Peace
+                          </h2>
+                          <div class="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-indigo-600 via-purple-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                          <div class="absolute -bottom-2 left-0 w-full h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700 delay-100"></div>
+                      </div>
+                      <p class="text-xl leading-relaxed text-gray-600 dark:text-gray-300">
+                          <span class="word-hover">Begin</span>
+                          <span class="word-hover">your</span>
+                          <span class="word-hover">path</span>
+                          <span class="word-hover">to</span>
+                          <span class="word-hover">inner</span>
+                          <span class="word-hover">peace</span>
+                          <span class="word-hover">and</span>
+                          <span class="word-hover">mindfulness</span>
+                          <span class="word-hover">with</span>
+                          <span class="word-hover">our</span>
+                          <span class="word-hover">comprehensive</span>
+                          <span class="word-hover">wellness</span>
+                          <span class="word-hover">tools</span>
+                          <span class="word-hover">and</span>
+                          <span class="word-hover">resources.</span>
+                      </p>
+                      <style>
+                          .word-hover {
+                              display: inline-block;
+                              padding: 0 2px;
+                              margin: 0 1px;
+                              cursor: pointer;
+                              position: relative;
+                              transition: all 0.3s ease;
+                          }
+                         
+                          .word-hover::after {
+                              content: '';
+                              position: absolute;
+                              bottom: 0;
+                              left: 0;
+                              width: 100%;
+                              height: 100%;
+                              background: linear-gradient(to right, rgba(79, 70, 229, 0.2), rgba(147, 51, 234, 0.2), rgba(236, 72, 153, 0.2));
+                              transform: scaleX(0);
+                              transform-origin: left;
+                              transition: transform 0.3s ease;
+                              z-index: -1;
+                              border-radius: 4px;
+                          }
+                         
+                          .word-hover:hover {
+                              color: #4F46E5;
+                              transform: translateY(-2px);
+                          }
+                         
+                          .word-hover:hover::after {
+                              transform: scaleX(1);
+                          }
+                      </style>
+                  </div>
+              </div>
+
+              <!-- Mission and Vision -->
+              <div class="grid md:grid-cols-2 gap-8 mb-16">
+                  <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+                      <h2 class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-4">Our Mission</h2>
+                      <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                          To provide accessible tools and resources for mental wellness, helping individuals achieve inner peace and emotional balance in their daily lives.
+                      </p>
+                  </div>
+                  <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900 dark:to-pink-900 p-8 rounded-2xl shadow-xl transform hover:scale-105 transition-all duration-300">
+                      <h2 class="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-4">Our Vision</h2>
+                      <p class="text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+                          To create a world where mental wellness is prioritized and accessible to everyone, fostering a community of mindfulness and emotional well-being.
+                      </p>
+                  </div>
+              </div>
+
+              <!-- Features Grid -->
+              <div class="grid md:grid-cols-3 gap-8 mb-16">
+                  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+                      <div class="text-4xl text-blue-500 dark:text-blue-400 mb-4">
+                          <i class="fas fa-spa"></i>
+                      </div>
+                      <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Guided Meditation</h3>
+                      <p class="text-gray-600 dark:text-gray-400">
+                          Access a variety of meditation sessions tailored to your needs and experience level.
+                      </p>
+                  </div>
+                  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+                      <div class="text-4xl text-green-500 dark:text-green-400 mb-4">
+                          <i class="fas fa-wind"></i>
+                      </div>
+                      <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Breathing Exercises</h3>
+                      <p class="text-gray-600 dark:text-gray-400">
+                          Learn and practice breathing techniques for stress relief and relaxation.
+                      </p>
+                  </div>
+                  <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300">
+                      <div class="text-4xl text-purple-500 dark:text-purple-400 mb-4">
+                          <i class="fas fa-music"></i>
+                      </div>
+                      <h3 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Relaxing Music</h3>
+                      <p class="text-gray-600 dark:text-gray-400">
+                          Enjoy curated playlists designed to enhance your meditation and relaxation experience.
+                      </p>
+                  </div>
+              </div>
+
+              <!-- About Section -->
+             
+
+              <!-- Team Section -->
+              <div class="mb-16">
+                  <div class="text-center mb-12">
+                      <h2 class="text-4xl font-bold mb-6 relative group">
+                          <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500 transform transition-all duration-500 hover:scale-110 hover:rotate-1 hover:skew-y-1">
+                              Meet Our Expert Team
+                          </span>
+                          <span class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-indigo-600 to-emerald-500 rounded-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></span>
+                      </h2>
+                      <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+                          Our team of mental wellness experts brings together decades of experience in psychology,
+                          mindfulness, and digital wellness. Each member is committed to helping you achieve your mental health goals.
+                      </p>
+                  </div>
+
+                  <div class="grid grid-cols-4 gap-8">
+                      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 group">
+                          <div class="relative overflow-hidden rounded-full w-32 h-32 mx-auto mb-4">
+                              <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                   alt="Dr. Sarah Mitchell" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          </div>
+                          <h3 class="text-xl font-bold text-center text-teal-700 dark:text-teal-400 group-hover:text-indigo-600 transition-colors">Dr. Sarah Mitchell</h3>
+                          <p class="text-center text-gray-600 dark:text-gray-400 font-medium">Clinical Psychologist</p>
+                          <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">Specialized in Cognitive Behavioral Therapy and Anxiety Management</p>
+                          <div class="mt-4 flex justify-center space-x-4">
+                              <a href="#" class="text-blue-500 hover:text-blue-700 transform hover:scale-110 transition-transform"><i class="fab fa-linkedin"></i></a>
+                              <a href="#" class="text-pink-500 hover:text-pink-700 transform hover:scale-110 transition-transform"><i class="fab fa-instagram"></i></a>
+                              <a href="#" class="text-blue-400 hover:text-blue-600 transform hover:scale-110 transition-transform"><i class="fab fa-twitter"></i></a>
+                          </div>
+                      </div>
+
+                      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 group">
+                          <div class="relative overflow-hidden rounded-full w-32 h-32 mx-auto mb-4">
+                              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                   alt="James Wilson" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          </div>
+                          <h3 class="text-xl font-bold text-center text-teal-700 dark:text-teal-400 group-hover:text-indigo-600 transition-colors">James Wilson</h3>
+                          <p class="text-center text-gray-600 dark:text-gray-400 font-medium">Mindfulness Coach</p>
+                          <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">Expert in Meditation Techniques and Stress Reduction</p>
+                          <div class="mt-4 flex justify-center space-x-4">
+                              <a href="#" class="text-blue-500 hover:text-blue-700 transform hover:scale-110 transition-transform"><i class="fab fa-linkedin"></i></a>
+                              <a href="#" class="text-pink-500 hover:text-pink-700 transform hover:scale-110 transition-transform"><i class="fab fa-instagram"></i></a>
+                              <a href="#" class="text-blue-400 hover:text-blue-600 transform hover:scale-110 transition-transform"><i class="fab fa-twitter"></i></a>
+                          </div>
+                      </div>
+
+                      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 group">
+                          <div class="relative overflow-hidden rounded-full w-32 h-32 mx-auto mb-4">
+                              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                   alt="Dr. Emily Chen" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          </div>
+                          <h3 class="text-xl font-bold text-center text-teal-700 dark:text-teal-400 group-hover:text-indigo-600 transition-colors">Dr. Emily Chen</h3>
+                          <p class="text-center text-gray-600 dark:text-gray-400 font-medium">Sleep Specialist</p>
+                          <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">Expert in Sleep Disorders and Relaxation Techniques</p>
+                          <div class="mt-4 flex justify-center space-x-4">
+                              <a href="#" class="text-blue-500 hover:text-blue-700 transform hover:scale-110 transition-transform"><i class="fab fa-linkedin"></i></a>
+                              <a href="#" class="text-pink-500 hover:text-pink-700 transform hover:scale-110 transition-transform"><i class="fab fa-instagram"></i></a>
+                              <a href="#" class="text-blue-400 hover:text-blue-600 transform hover:scale-110 transition-transform"><i class="fab fa-twitter"></i></a>
+                          </div>
+                      </div>
+
+                      <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 group">
+                          <div class="relative overflow-hidden rounded-full w-32 h-32 mx-auto mb-4">
+                              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                                   alt="Michael Rodriguez" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                          </div>
+                          <h3 class="text-xl font-bold text-center text-teal-700 dark:text-teal-400 group-hover:text-indigo-600 transition-colors">Michael Rodriguez</h3>
+                          <p class="text-center text-gray-600 dark:text-gray-400 font-medium">Wellness Coach</p>
+                          <p class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">Specialized in Holistic Health and Lifestyle Management</p>
+                          <div class="mt-4 flex justify-center space-x-4">
+                              <a href="#" class="text-blue-500 hover:text-blue-700 transform hover:scale-110 transition-transform"><i class="fab fa-linkedin"></i></a>
+                              <a href="#" class="text-pink-500 hover:text-pink-700 transform hover:scale-110 transition-transform"><i class="fab fa-instagram"></i></a>
+                              <a href="#" class="text-blue-400 hover:text-blue-600 transform hover:scale-110 transition-transform"><i class="fab fa-twitter"></i></a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900 dark:to-indigo-900 rounded-2xl p-8 shadow-lg">
+              <h2 class="text-4xl font-bold text-center mb-8">
+                  <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500 transform transition-all duration-500 hover:scale-110 hover:rotate-1 hover:skew-y-1">
+                      Welcome to Our Meditation Journey
+                  </span>
+              </h2>
+              <p class="text-gray-600 dark:text-gray-300 mb-6">We are dedicated to helping you achieve inner peace and mindfulness through guided meditation and breathing exercises.</p>
+             
+              <!-- About Section Content -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <!-- Newsletter Subscription -->
+                  <div class="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-800 dark:to-indigo-800 rounded-2xl p-8 shadow-lg">
+                      <h3 class="text-2xl font-bold text-center mb-4">
+                          <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500 transform transition-all duration-500 hover:scale-110 hover:rotate-1 hover:skew-y-1">
+                              Subscribe to Our Newsletter
+                          </span>
+                      </h3>
+                      <p class="text-gray-600 dark:text-gray-300 mb-6">Stay updated with our latest meditation tips and wellness content.</p>
+                      <form id="subscribeForm" class="flex flex-col gap-4">
+                          <input type="email"
+                                 id="subscribeEmail"
+                                 placeholder="Enter your email"
+                                 class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                                 required>
+                          <button type="submit"
+                                  class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-emerald-500 text-white rounded-lg hover:from-indigo-700 hover:to-emerald-600 transition-colors">
+                              Subscribe
+                          </button>
+                      </form>
+                  </div>
+
+                  <!-- Let's Talk Section -->
+                  <div class="bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-800 dark:to-indigo-800 rounded-2xl p-8 shadow-lg">
+                      <h3 class="text-2xl font-bold text-center mb-4">
+                          <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500 transform transition-all duration-500 hover:scale-110 hover:rotate-1 hover:skew-y-1">
+                              Let's Talk
+                          </span>
+                      </h3>
+                      <p class="text-gray-600 dark:text-gray-300 mb-6">Have questions or want to share your meditation journey? We'd love to hear from you!</p>
+                      <form id="letsTalkForm" class="flex flex-col gap-4">
+                          <input type="text"
+                                 id="name"
+                                 placeholder="Your Name"
+                                 class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                                 required>
+                          <input type="email"
+                                 id="email"
+                                 placeholder="Your Email"
+                                 class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                                 required>
+                          <textarea
+                              id="message"
+                              placeholder="Your Message (max 150 words)"
+                              rows="4"
+                              class="px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
+                              required></textarea>
+                          <div class="flex justify-between items-center text-sm">
+                              <span id="wordCount" class="text-gray-500 dark:text-gray-400">0/150 words</span>
+                              <span id="wordLimitError" class="text-red-500 hidden">Message exceeds 150 words</span>
+                          </div>
+                          <button type="submit"
+                                  class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-emerald-500 text-white rounded-lg hover:from-indigo-700 hover:to-emerald-600 transition-colors">
+                              Send Message
+                          </button>
+                      </form>
+                  </div>
+              </div>
+          </div>
+          <!-- Social Media Follow Section at the end of About page -->
+          <div class="text-center mb-16 mt-12">
+              <h3 class="text-2xl font-bold mb-8 relative inline-block group">
+                  <span class="inline-block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-emerald-500 transform transition-all duration-500 hover:scale-110 hover:rotate-1 hover:skew-y-1">
+                      Connect With Us
+                  </span>
+                  <span class="absolute -bottom-2 left-0 w-full h-0.5 bg-gradient-to-r from-indigo-600 to-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
+              </h3>
+              <div class="flex justify-center items-center space-x-6 flex-wrap gap-y-12">
+                  <!-- Instagram -->
+                  <div class="social-btn-container">
+                      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer"
+                         class="group relative p-4 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-lg transform hover:scale-110 transition-all duration-300 hover:rotate-3 inline-flex items-center justify-center w-16 h-16">
+                          <div class="absolute inset-0.5 bg-white dark:bg-gray-800 rounded-lg group-hover:bg-opacity-90 transition-all duration-300"></div>
+                          <i class="fab fa-instagram text-3xl relative z-10 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 bg-clip-text text-transparent group-hover:text-pink-500 transition-colors duration-300"></i>
+                          <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                              <span id="instagram-count">15.4K</span>
+                          </span>
+                      </a>
+                  </div>
+
+                  <!-- Twitter -->
+                  <div class="social-btn-container">
+                      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+                         class="group relative p-4 bg-blue-400 rounded-lg transform hover:scale-110 transition-all duration-300 hover:-rotate-3 inline-flex items-center justify-center w-16 h-16">
+                          <div class="absolute inset-0.5 bg-white dark:bg-gray-800 rounded-lg group-hover:bg-opacity-90 transition-all duration-300"></div>
+                          <i class="fab fa-twitter text-3xl relative z-10 text-blue-400 group-hover:text-blue-500 transition-colors duration-300"></i>
+                          <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                              <span id="twitter-count">12.8K</span>
+                          </span>
+                      </a>
+                  </div>
+
+                  <!-- Facebook -->
+                  <div class="social-btn-container">
+                      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"
+                         class="group relative p-4 bg-blue-600 rounded-lg transform hover:scale-110 transition-all duration-300 hover:rotate-3 inline-flex items-center justify-center w-16 h-16">
+                          <div class="absolute inset-0.5 bg-white dark:bg-gray-800 rounded-lg group-hover:bg-opacity-90 transition-all duration-300"></div>
+                          <i class="fab fa-facebook-f text-3xl relative z-10 text-blue-600 group-hover:text-blue-700 transition-colors duration-300"></i>
+                          <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                              <span id="facebook-count">25.6K</span>
+                          </span>
+                      </a>
+                  </div>
+
+                  <!-- LinkedIn -->
+                  <div class="social-btn-container">
+                      <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer"
+                         class="group relative p-4 bg-blue-700 rounded-lg transform hover:scale-110 transition-all duration-300 hover:-rotate-3 inline-flex items-center justify-center w-16 h-16">
+                          <div class="absolute inset-0.5 bg-white dark:bg-gray-800 rounded-lg group-hover:bg-opacity-90 transition-all duration-300"></div>
+                          <i class="fab fa-linkedin-in text-3xl relative z-10 text-blue-700 group-hover:text-blue-800 transition-colors duration-300"></i>
+                          <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                              <span id="linkedin-count">8.9K</span>
+                          </span>
+                      </a>
+                  </div>
+
+                  <!-- YouTube -->
+                  <div class="social-btn-container">
+                      <a href="https://youtube.com" target="_blank" rel="noopener noreferrer"
+                         class="group relative p-4 bg-red-600 rounded-lg transform hover:scale-110 transition-all duration-300 hover:rotate-3 inline-flex items-center justify-center w-16 h-16">
+                          <div class="absolute inset-0.5 bg-white dark:bg-gray-800 rounded-lg group-hover:bg-opacity-90 transition-all duration-300"></div>
+                          <i class="fab fa-youtube text-3xl relative z-10 text-red-600 group-hover:text-red-700 transition-colors duration-300"></i>
+                          <span class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                              <span id="youtube-count">32.1K</span>
+                          </span>
+                      </a>
+                  </div>
+              </div>
+          </div>
+      </section>
+
+        <!-- Breathing Section -->
+        <section id="breathing" class="section">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold gradient-text text-center mb-8">Box Breathing Exercise</h1>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
+                    <div class="text-center mb-8">
+                        <p class="text-lg text-gray-600 dark:text-gray-300 mb-4">
+                            Box breathing is a simple but powerful technique for reducing stress and improving focus.
+                            Follow the circle animation and breathe in a 4-4-4-4 pattern.
+                        </p>
+                        <div class="breathing-circle" id="boxBreathingCircle">
+                            Ready
+                        </div>
+                        <p class="mt-4 text-center text-gray-600 dark:text-gray-300">
+                            Inhale (4s) → Hold (4s) → Exhale (4s) → Hold (4s)
+                        </p>
+                    </div>
+                    <div class="flex justify-center space-x-4">
+                        <button onclick="startBoxBreathing()" class="px-8 py-3 bg-gradient-to-r from-indigo-600 to-emerald-500 text-white rounded-lg hover:opacity-90 transition-opacity" id="startBoxBreathing">
+                            Start Exercise
+                        </button>
+                        <button onclick="stopBoxBreathing()" class="px-8 py-3 bg-red-500 text-white rounded-lg hover:opacity-90 transition-opacity hidden" id="stopBoxBreathing">
+                            Stop Exercise
+                        </button>
+                    </div>
+                    <!-- Next Button -->
+                    <div class="mt-8 text-center">
+                        <button onclick="showSection('meditation')" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:opacity-90 transition-opacity transform hover:scale-105 transition-transform duration-300">
+                            Next: Meditation <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Drawing Section -->
+        <section id="drawing" class="section">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold gradient-text text-center mb-8">Express Yourself</h1>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
+                    <div class="flex flex-wrap justify-between mb-4">
+                        <!-- Brush Tools -->
+                        <div class="flex space-x-2 mb-4">
+                            <button onclick="selectTool('pencil')" class="tool-button active" id="pencilTool">
+                                <i class="fas fa-pencil-alt"></i> Pencil
+                            </button>
+                            <button onclick="selectTool('brush')" class="tool-button" id="brushTool">
+                                <i class="fas fa-paint-brush"></i> Brush
+                            </button>
+                            <button onclick="selectTool('marker')" class="tool-button" id="markerTool">
+                                <i class="fas fa-highlighter"></i> Marker
+                            </button>
+                            <button onclick="selectTool('eraser')" class="tool-button" id="eraserTool">
+                                <i class="fas fa-eraser"></i> Eraser
+                            </button>
+                        </div>
+
+                        <!-- Color Picker and Preset Colors -->
+                        <div class="flex items-center space-x-4 mb-4">
+                            <div class="flex items-center">
+                                <label class="mr-2 text-gray-700 dark:text-gray-300">Color:</label>
+                                <input type="color" id="colorPicker" class="w-8 h-8 rounded cursor-pointer" value="#000000">
+                            </div>
+                            <div class="flex space-x-2">
+                                <button onclick="changeColor('black')" class="w-8 h-8 bg-black rounded-full hover:scale-110 transition-transform"></button>
+                                <button onclick="changeColor('red')" class="w-8 h-8 bg-red-500 rounded-full hover:scale-110 transition-transform"></button>
+                                <button onclick="changeColor('blue')" class="w-8 h-8 bg-blue-500 rounded-full hover:scale-110 transition-transform"></button>
+                                <button onclick="changeColor('green')" class="w-8 h-8 bg-green-500 rounded-full hover:scale-110 transition-transform"></button>
+                                <button onclick="changeColor('yellow')" class="w-8 h-8 bg-yellow-500 rounded-full hover:scale-110 transition-transform"></button>
+                                <button onclick="changeColor('purple')" class="w-8 h-8 bg-purple-500 rounded-full hover:scale-110 transition-transform"></button>
+                            </div>
+                        </div>
+
+                        <!-- Brush Size -->
+                        <div class="flex items-center space-x-2 mb-4">
+                            <label class="text-gray-700 dark:text-gray-300">Size:</label>
+                            <input type="range" min="1" max="50" value="5" class="w-32" id="sizeSlider" onchange="updateSize(this.value)">
+                            <span id="sizeValue" class="text-gray-700 dark:text-gray-300">5px</span>
+                        </div>
+
+                        <button onclick="clearCanvas()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:opacity-90 transition-opacity">
+                            Clear Canvas
+                        </button>
+                    </div>
+                    <canvas id="drawingCanvas" width="800" height="500"></canvas>
+                   
+                    <!-- Next Button -->
+                    <div class="fixed bottom-4 right-4">
+                        <button onclick="showSection('photos')" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:opacity-90 transition-opacity transform hover:scale-105 transition-transform duration-300 shadow-lg">
+                            Next: Photos <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Post Section -->
+        <section id="photos" class="section">
+            <div class="max-w-6xl mx-auto">
+                <h1 class="text-4xl font-bold gradient-text text-center mb-8">Share Your Emotions</h1>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6">
+                    <!-- Emotion Input Section -->
+                    <div class="mb-6">
+                        <textarea id="emotionInput" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
+                            placeholder="How are you feeling today? Share your emotions..."></textarea>
+                        <div class="mt-2 flex justify-between items-center">
+                            <input type="file" id="photoInput" accept="image/*" class="hidden">
+                            <label for="photoInput" class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-emerald-500 text-white rounded-lg cursor-pointer hover:opacity-90">
+                                Add Photo
+                            </label>
+                            <button onclick="postEmotion()" class="px-4 py-2 bg-gradient-to-r from-indigo-600 to-emerald-500 text-white rounded-lg hover:opacity-90">
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                   
+                    <!-- Posts Grid -->
+                    <div class="space-y-6 mb-8" id="postsGrid">
+                        <!-- Posts will be added here -->
+                    </div>
+                   
+                    <!-- Next Button -->
+                    <div class="text-center">
+                        <button onclick="showSection('contact')" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:opacity-90 transition-opacity transform hover:scale-105 transition-transform duration-300">
+                            Next: Contact <i class="fas fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Meditation Section -->
+        <section id="meditation" class="section">
+            <div class="max-w-6xl mx-auto">
+                <!-- Header Section -->
+                <div class="flex justify-center items-center mb-16">
+                    <div class="text-center px-6 py-8 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-3xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-4 drop-shadow-md hover:text-white transition-all duration-500">
+                            🌟 Explore Meditation Videos 🌟
+                        </h1>
+                        <p class="text-lg md:text-xl text-gray-800 dark:text-gray-200 font-medium px-6 md:px-12 mb-8 opacity-80 hover:opacity-100 transition-opacity duration-300">
+                            Discover peace and mindfulness through carefully curated meditation practices.
+                            Take the first step towards a balanced and peaceful mind.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Beginner Section -->
+                <div class="mb-16 px-4 py-12 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 dark:from-blue-900 dark:via-indigo-900 dark:to-purple-900 rounded-3xl">
+                    <h2 class="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-6 text-center">✨ Beginner Level</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="shadow-xl p-4 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-64 rounded-xl" src="https://www.youtube.com/embed/inpok4MKVLM" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-4 text-lg text-teal-500 dark:text-teal-300 text-center font-medium">5-Minute Meditation You Can Do Anywhere</p>
+                        </div>
+                        <div class="shadow-xl p-4 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-64 rounded-xl" src="https://www.youtube.com/embed/wVSkYKj26qg" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-4 text-lg text-purple-600 dark:text-purple-400 text-center font-medium">5 min Meditation for Clarity & Relaxation</p>
+                        </div>
+                        <div class="shadow-xl p-4 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-64 rounded-xl" src="https://www.youtube.com/embed/8_f7ltCNSAQ" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-4 text-lg text-pink-500 dark:text-pink-300 text-center font-medium">Guided Morning Meditation</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Intermediate Section -->
+                <div class="mb-16 px-4 py-12 bg-gradient-to-r from-purple-100 via-pink-100 to-red-100 dark:from-purple-900 dark:via-pink-900 dark:to-red-900 rounded-3xl">
+                    <h2 class="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-6 text-center">🌿 Intermediate Level</h2>
+                    <div class="grid md:grid-cols-3 gap-8">
+                        <div class="shadow-xl p-4 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-64 rounded-xl" src="https://www.youtube.com/embed/pAEioF7FaWY" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-4 text-lg text-teal-500 dark:text-teal-300 text-center font-medium">Guided Meditation for Inner Peace and Calm</p>
+                        </div>
+                        <div class="shadow-xl p-4 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-64 rounded-xl" src="https://www.youtube.com/embed/xO9q0ioUwGc" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-4 text-lg text-orange-600 dark:text-orange-400 text-center font-medium">20min mindful breathing meditation</p>
+                        </div>
+                        <div class="shadow-xl p-4 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-64 rounded-xl" src="https://www.youtube.com/embed/w4tlGeSrcNw" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-4 text-lg text-green-500 dark:text-green-300 text-center font-medium">Guided Meditation For Stress and Anxiety</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Section -->
+                <div class="mb-16 px-4 py-12 bg-gradient-to-r from-green-100 via-teal-100 to-cyan-100 dark:from-green-900 dark:via-teal-900 dark:to-cyan-900 rounded-3xl">
+                    <h2 class="text-4xl font-bold text-red-600 dark:text-red-400 mb-6 text-center">🌺 Advanced Level</h2>
+                    <div class="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                        <div class="shadow-xl p-6 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-72 rounded-xl" src="https://www.youtube.com/embed/309hAID38Rs" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-6 text-xl text-pink-600 dark:text-pink-400 text-center font-medium">Advanced Breathing - Ultimate Relaxation Exercise</p>
+                            <p class="mt-2 text-gray-600 dark:text-gray-300 text-center">Master the art of deep breathing for ultimate relaxation and stress relief.</p>
+                        </div>
+                        <div class="shadow-xl p-6 rounded-xl bg-white dark:bg-gray-700 hover:scale-105 transform transition-all duration-300">
+                            <iframe class="w-full h-72 rounded-xl" src="https://www.youtube.com/embed/jrZ_LI9qCFM" frameborder="0" allowfullscreen></iframe>
+                            <p class="mt-6 text-xl text-purple-500 dark:text-purple-300 text-center font-medium">Advanced Mindfulness Meditation</p>
+                            <p class="mt-2 text-gray-600 dark:text-gray-300 text-center">Deep dive into mindfulness practices for enhanced focus and awareness.</p>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- Next Button -->
+                <div class="fixed bottom-4 right-4">
+                    <button onclick="showSection('music')" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:opacity-90 transition-opacity transform hover:scale-105 transition-transform duration-300 shadow-lg">
+                        Next: Music <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Music Section -->
+        <section id="music" class="section">
+            <div class="max-w-7xl mx-auto px-6 py-12">
+                <!-- Hero Section -->
+                <div class="flex justify-center items-center mb-16" data-aos="zoom-in">
+                    <div class="text-center px-6 py-8 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 rounded-3xl shadow-lg transform hover:scale-105 transition-transform duration-300">
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-500 mb-4 drop-shadow-md hover:text-white transition-all duration-500">
+                            🎵 Explore Music 🎵
+                        </h1>
+                        <p class="text-lg md:text-xl text-gray-800 dark:text-gray-200 font-medium px-6 md:px-12 mb-8 opacity-80 hover:opacity-100 transition-opacity duration-300">
+                            Feel the rhythm, calm your mind, and journey through sound.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Quick Access Menu -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16" data-aos="fade-up">
+                    <button class="bg-serene-100 dark:bg-serene-600 p-6 rounded-xl hover:bg-serene-200 dark:hover:bg-serene-500 transition transform hover:scale-105 shadow-md" onclick="scrollToSection('relaxation')">
+                        <i class="fas fa-spa text-serene-600 dark:text-serene-200 text-3xl mb-4"></i>
+                        <h3 class="text-xl font-semibold">Relaxation</h3>
+                        <p class="text-gray-600 dark:text-gray-300">Calm your mind and body</p>
+                    </button>
+                    <button class="bg-peaceful-100 dark:bg-peaceful-600 p-6 rounded-xl hover:bg-peaceful-200 dark:hover:bg-peaceful-500 transition transform hover:scale-105 shadow-md" onclick="scrollToSection('focus')">
+                        <i class="fas fa-brain text-peaceful-600 dark:text-peaceful-200 text-3xl mb-4"></i>
+                        <h3 class="text-xl font-semibold">Focus</h3>
+                        <p class="text-gray-600 dark:text-gray-300">Enhance concentration</p>
+                    </button>
+                    <button class="bg-tranquil-100 dark:bg-tranquil-600 p-6 rounded-xl hover:bg-tranquil-200 dark:hover:bg-tranquil-500 transition transform hover:scale-105 shadow-md" onclick="scrollToSection('sleep')">
+                        <i class="fas fa-moon text-tranquil-600 dark:text-tranquil-200 text-3xl mb-4"></i>
+                        <h3 class="text-xl font-semibold">Sleep</h3>
+                        <p class="text-gray-600 dark:text-gray-300">Drift into peaceful sleep</p>
+                    </button>
+                </div>
+
+                <!-- Relaxation Section -->
+                <div id="relaxation" class="mb-16" data-aos="fade-up">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-serene-600 dark:text-serene-200">Relaxation Music</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Peaceful Morning</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Gentle piano melodies</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Ocean Breeze</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Wave and wind harmony</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Forest Calm</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Birdsong and stream</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Focus Section -->
+                <div id="focus" class="mb-16" data-aos="fade-up">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-peaceful-600 dark:text-peaceful-200">Focus Music</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Deep Work</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Cognitive enhancer tones</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Zen Mind</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Focus through simplicity</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Flow State</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Instrumental flow builder</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sleep Section -->
+                <div id="sleep" class="mb-16" data-aos="fade-up">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-tranquil-600 dark:text-tranquil-200">Sleep Music</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Night Rain</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Soothing night rain</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Dreamscape</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Ambient dream tones</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                            <h3 class="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-200">Moonlight Drift</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mb-3">Soft lullaby vibes</p>
+                            <audio controls class="w-full rounded">
+                                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" type="audio/mpeg" />
+                            </audio>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- Next Button -->
+                <div class="fixed bottom-4 right-4">
+                    <button onclick="showSection('drawing')" class="px-8 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:opacity-90 transition-opacity transform hover:scale-105 transition-transform duration-300 shadow-lg">
+                        Next: Drawing <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-4xl font-bold gradient-text text-center mb-8">Contact Us</h1>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-8">
+                    <form onsubmit="submitContact(event)" class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Name</label>
+                            <input type="text" id="contactName" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Email</label>
+                            <input type="email" id="contactEmail" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 dark:text-gray-300 mb-2">Message</label>
+                            <textarea id="contactMessage" rows="4" class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500" required></textarea>
+                        </div>
+                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-emerald-500 text-white py-2 rounded-lg hover:opacity-90 transition-opacity">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Add this div for notifications -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Add scrollToSection function
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (section) section.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Show section function
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+           
+            // Show the selected section
+            document.getElementById(sectionId).classList.add('active');
+           
+            // Update active state of navigation buttons
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.querySelector(`button[onclick="showSection('${sectionId}')"]`).classList.add('active');
+           
+            // Scroll to top of the page
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Auth tab switching
+        function switchAuthTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const loginTab = document.getElementById('loginTab');
+            const signupTab = document.getElementById('signupTab');
+
+            if (tab === 'login') {
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+                loginTab.classList.add('gradient-text');
+                loginTab.classList.remove('text-gray-500');
+                signupTab.classList.remove('gradient-text');
+                signupTab.classList.add('text-gray-500');
+            } else {
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+                signupTab.classList.add('gradient-text');
+                signupTab.classList.remove('text-gray-500');
+                loginTab.classList.remove('gradient-text');
+                loginTab.classList.add('text-gray-500');
+            }
+        }
+
+        // Login function
+        function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+           
+            if (email && password) {
+                // Check if user exists in localStorage
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.email === email && u.password === password);
+               
+                if (user) {
+                    alert('Login successful!');
+                    // Clear the form fields after successful login
+                    document.getElementById('loginEmail').value = '';
+                    document.getElementById('loginPassword').value = '';
+                    showSection('about');
+                } else {
+                    alert('Invalid email or password');
+                }
+            } else {
+                alert('Please fill in all fields');
+            }
+        }
+
+        // Signup function
+        function signup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+           
+            // Validate password requirements
+            const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+           
+            if (!passwordRegex.test(password)) {
+                alert('Password must contain at least one letter, one number, and one special character');
+                return;
+            }
+           
+            if (password !== confirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+           
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.some(user => user.email === email)) {
+                alert('Email already registered');
+                return;
+            }
+           
+            // Add new user
+            users.push({ name, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+           
+            alert('Signup successful! Please login with your credentials.');
+            // Clear the form fields after successful signup
+            document.getElementById('signupName').value = '';
+            document.getElementById('signupEmail').value = '';
+            document.getElementById('signupPassword').value = '';
+            document.getElementById('confirmPassword').value = '';
+            switchAuthTab('login');
+        }
+
+        // Breathing exercises
+        let boxBreathingInterval;
+        let isBoxBreathingActive = false;
+
+        function startBoxBreathing() {
+            if (isBoxBreathingActive) return;
+           
+            const circle = document.getElementById('boxBreathingCircle');
+            const startButton = document.getElementById('startBoxBreathing');
+            const stopButton = document.getElementById('stopBoxBreathing');
+            let phase = 0;
+           
+            isBoxBreathingActive = true;
+            startButton.classList.add('hidden');
+            stopButton.classList.remove('hidden');
+           
+            clearInterval(boxBreathingInterval);
+            boxBreathingInterval = setInterval(() => {
+                switch(phase) {
+                    case 0:
+                        circle.textContent = 'Breathe In';
+                        circle.classList.add('expand');
+                        break;
+                    case 1:
+                        circle.textContent = 'Hold';
+                        break;
+                    case 2:
+                        circle.textContent = 'Breathe Out';
+                        circle.classList.remove('expand');
+                        break;
+                    case 3:
+                        circle.textContent = 'Hold';
+                        break;
+                }
+                phase = (phase + 1) % 4;
+            }, 4000);
+        }
+
+        function stopBoxBreathing() {
+            if (!isBoxBreathingActive) return;
+           
+            const circle = document.getElementById('boxBreathingCircle');
+            const startButton = document.getElementById('startBoxBreathing');
+            const stopButton = document.getElementById('stopBoxBreathing');
+           
+            clearInterval(boxBreathingInterval);
+            isBoxBreathingActive = false;
+            circle.textContent = 'Ready';
+            circle.classList.remove('expand');
+            startButton.classList.remove('hidden');
+            stopButton.classList.add('hidden');
+        }
+
+        // Drawing functionality
+        let canvas = document.getElementById('drawingCanvas');
+        let ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let currentColor = 'black';
+        let currentTool = 'pencil';
+        let currentSize = 5;
+        let lastX = 0;
+        let lastY = 0;
+
+        // Set canvas background to white
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+
+        // Color picker event listener
+        document.getElementById('colorPicker').addEventListener('input', function(e) {
+            currentColor = e.target.value;
+        });
+
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+           
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+           
+            ctx.lineWidth = currentSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+           
+            if (currentTool === 'eraser') {
+                ctx.strokeStyle = 'white';
+            } else {
+                ctx.strokeStyle = currentColor;
+            }
+
+            // Different brush effects based on tool
+            switch(currentTool) {
+                case 'pencil':
+                    ctx.globalAlpha = 1;
+                    ctx.lineWidth = currentSize;
+                    break;
+                case 'brush':
+                    ctx.globalAlpha = 0.7;
+                    ctx.lineWidth = currentSize * 2;
+                    break;
+                case 'marker':
+                    ctx.globalAlpha = 0.3;
+                    ctx.lineWidth = currentSize * 3;
+                    break;
+                case 'eraser':
+                    ctx.globalAlpha = 1;
+                    ctx.lineWidth = currentSize * 2;
+                    break;
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+
+            lastX = x;
+            lastY = y;
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            ctx.beginPath();
+        }
+
+        function selectTool(tool) {
+            currentTool = tool;
+            document.querySelectorAll('.tool-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            document.getElementById(`${tool}Tool`).classList.add('active');
+        }
+
+        function changeColor(color) {
+            currentColor = color;
+            document.getElementById('colorPicker').value = color;
+        }
+
+        function updateSize(size) {
+            currentSize = size;
+            document.getElementById('sizeValue').textContent = size + 'px';
+        }
+
+        function clearCanvas() {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        // Photo upload functionality
+        document.getElementById('photoInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoGrid = document.getElementById('photoGrid');
+                    const photoCard = document.createElement('div');
+                    photoCard.className = 'photo-card bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4';
+                    photoCard.innerHTML = `
+                        <img src="${e.target.result}" alt="Uploaded photo" class="w-full h-64 object-cover rounded-lg">
+                    `;
+                    photoGrid.appendChild(photoCard);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function postEmotion() {
+            const emotionText = document.getElementById('emotionInput').value;
+            const photoInput = document.getElementById('photoInput');
+            const file = photoInput.files[0];
+
+            if (!emotionText && !file) {
+                showNotification('Please share your emotion or add a photo');
+                return;
+            }
+
+            const post = {
+                id: Date.now(),
+                text: emotionText,
+                image: null,
+                timestamp: new Date().toLocaleString()
+            };
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    post.image = e.target.result;
+                    addPostToGrid(post);
+                    savePosts();
+                    clearInputs();
+                    // Show custom alert for photo post
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 animate-bounce';
+                    alertDiv.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-xl mr-2"></i>
+                            <span>Photo posted successfully! 🎉</span>
+                        </div>
+                    `;
+                    document.body.appendChild(alertDiv);
+                   
+                    // Remove alert after 3 seconds
+                    setTimeout(() => {
+                        alertDiv.classList.add('opacity-0');
+                        setTimeout(() => {
+                            document.body.removeChild(alertDiv);
+                        }, 300);
+                    }, 3000);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                addPostToGrid(post);
+                savePosts();
+                clearInputs();
+                showNotification('You have shared your emotions successfully! 💭');
+            }
+        }
+
+        function addPostToGrid(post) {
+            const postsGrid = document.getElementById('postsGrid');
+            const postElement = document.createElement('div');
+            postElement.className = 'post-card bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4';
+            postElement.id = `post-${post.id}`;
+           
+            postElement.innerHTML = `
+                <div class="mb-4">
+                    <p class="text-gray-700 dark:text-gray-300">${post.text}</p>
+                    ${post.image ? `<img src="${post.image}" alt="Post image" class="post-image rounded-lg mt-2">` : ''}
+                </div>
+                <div class="flex justify-end">
+                    <span class="text-sm text-gray-500">${post.timestamp}</span>
+                </div>
+            `;
+           
+            postsGrid.insertBefore(postElement, postsGrid.firstChild);
+        }
+
+        // Contact form submission
+        function submitContact(event) {
+            event.preventDefault();
+            const name = document.getElementById('contactName').value;
+            const email = document.getElementById('contactEmail').value;
+            const message = document.getElementById('contactMessage').value;
+           
+            if (name && email && message) {
+                alert('Message sent successfully!');
+                document.getElementById('contactName').value = '';
+                document.getElementById('contactEmail').value = '';
+                document.getElementById('contactMessage').value = '';
+            } else {
+                alert('Please fill in all fields');
+            }
+        }
+
+        // Show login section by default
+        showSection('login');
+
+        // Add this to your existing script section
+        let posts = JSON.parse(localStorage.getItem('posts')) || [];
+
+        function savePosts() {
+            localStorage.setItem('posts', JSON.stringify(posts));
+        }
+
+        function clearInputs() {
+            document.getElementById('emotionInput').value = '';
+            document.getElementById('photoInput').value = '';
+        }
+
+        // Load existing posts when page loads
+        window.addEventListener('load', function() {
+            posts.forEach(post => addPostToGrid(post));
+        });
+
+        // Add this new function for notifications
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+           
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        // Audio player functionality
+        document.addEventListener('play', function(e) {
+            const audios = document.getElementsByTagName('audio');
+            for(let i = 0; i < audios.length; i++) {
+                if(audios[i] != e.target) {
+                    audios[i].pause();
+                }
+            }
+        }, true);
+
+        // Add mood selection function
+        function selectMood(mood) {
+            const moodMessage = document.getElementById('moodMessage');
+            moodMessage.classList.remove('hidden');
+           
+            // Remove active class from all mood buttons
+            document.querySelectorAll('.mood-button').forEach(button => {
+                button.classList.remove('ring-2', 'ring-offset-2', 'ring-indigo-500');
+            });
+           
+            // Add active class to selected mood button
+            event.currentTarget.classList.add('ring-2', 'ring-offset-2', 'ring-indigo-500');
+           
+            // Set appropriate message based on mood
+            switch(mood) {
+                case 'happy':
+                    moodMessage.innerHTML = `
+                        <div class="bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800 p-4 rounded-xl">
+                            <p class="text-yellow-800 dark:text-yellow-200">That's wonderful! 😊 Your happiness brightens our day! Keep spreading those positive vibes!</p>
+                        </div>
+                    `;
+                    break;
+                case 'stressed':
+                    moodMessage.innerHTML = `
+                        <div class="bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900 dark:to-red-800 p-4 rounded-xl">
+                            <p class="text-red-800 dark:text-red-200">It's okay to feel stressed. Take a deep breath and remember that this too shall pass. We're here to help you find your calm. 💆‍♂️</p>
+                        </div>
+                    `;
+                    break;
+                case 'fine':
+                    moodMessage.innerHTML = `
+                        <div class="bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 p-4 rounded-xl">
+                            <p class="text-green-800 dark:text-green-200">Glad to hear you're doing fine! 😌 Let's work together to make it even better!</p>
+                        </div>
+                    `;
+                    break;
+                case 'share':
+                    moodMessage.innerHTML = `
+                        <div class="bg-gradient-to-r from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 p-4 rounded-xl">
+                            <p class="text-blue-800 dark:text-blue-200">We're here to listen. 💭 Feel free to share what's on your mind. Your feelings matter to us.</p>
+                        </div>
+                    `;
+                    break;
+            }
+        }
+    </script>
+</body>
+</html>
